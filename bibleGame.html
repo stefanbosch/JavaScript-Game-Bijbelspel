@@ -1,0 +1,143 @@
+<html !DOCTYPE>
+<script>
+//let array = ['Genesis','Exodus','Leviticus','Numeri','Deuteronomium','Jozua','Rechters','Ruth','1 Samuël','2 Samuël','1 Koningen','2 Koningen','1 Kronieken','2 Kronieken','Ezra','Nehemia','Ester','Job','Psalmen','Spreuken','Prediker','Hooglied','Jesaja','Jeremia','Klaagliederen','Ezechiël','Daniël','Hosea','Joël','Amos','Obadja','Jona','Micha','Nahum','Habakuk','Sefanja','Haggai','Zacharia','Maleachi','Matteus','Marcus','Lucas','Johannes','Handelingen','Romeinen','1 Korintiërs','2 Korintiërs','Galaten','Efeziers','Filippenzen','Kolossenzen','1 Tessalonicenzen','2 Tessalonicenzen','1 Timoteüs','2 Timoteüs','Titus','Filemon','Hebreeën','Jakobus','1 Petrus','2 Petrus','1 Johannes','2 Johannes','3 Johannes','Judas','Openbaring van Jezus'];
+let array = ['Genesis','Exodus','Leviticus','Numeri','Deuteronomium','Jozua','Rechters','Ruth','1 Samuël','2 Samuël','1 Koningen','2 Koningen','1 Kronieken','2 Kronieken','Ezra','Nehemia','Ester','Job','Psalmen','Spreuken','Prediker','Hooglied','Jesaja','Jeremia','Klaagliederen','Ezechiël','Daniël','Hosea','Joël','Amos','Obadja','Jona','Micha','Nahum','Habakuk','Sefanja','Haggai','Zacharia','Maleachi'];
+//let array = ['Genesis','Exodus','Leviticus','Numeri','Deuteronomium'];
+
+function changeColor(id, isClicked){
+  isClicked = isClicked == undefined ? true : false ;
+  let node = document.getElementById(id);
+  let current = Number(node.style.backgroundColor.slice(4,17).split(",")[1]);
+
+  if (isClicked && !node.classList.contains("wrong")){
+    node.classList.add("wrong");
+    node.style.backgroundColor = "rgb(255, 100, 100)";
+    setTimeout(function (){changeColor(id,false)}, 30);
+  } 
+  else if (node.classList.contains("wrong")){
+    if (current >= 255){
+      node.classList.remove("wrong");
+    } else {
+      current = current + 8 >= 255 ? 255 : current + 8;
+      node.style.backgroundColor = "rgb(255,"+current+","+current+")";
+      setTimeout(function (){changeColor(id,false)}, 30);
+    }
+  }
+}
+
+
+function BibleGame (array,canvasId){
+  this.output = {};
+  this.constructor = function (){
+    this.array = array;
+    this.canvasId = canvasId;
+    this.newGame();
+  }
+
+  this.randomizer = function (){
+    let tempArr1 = [].concat(this.array);
+    let tempArr2 = [];
+    //for (i=0;i<arrLength;i++){
+    while (tempArr1.length > 0){
+      let rand = Math.floor(Math.random() * tempArr1.length);
+      tempArr2.push(tempArr1[rand]);
+      tempArr1.splice(rand,1);
+    }
+    return tempArr2;
+  }
+
+  this.doAnswer = function (a){
+    if (a == this.array[this.answerArray.length]){
+      this.answerArray.push(a);
+      let node = document.getElementById("button_"+a);
+      node.removeAttribute("onclick");
+      node.style.cursor = "auto";
+      //node.classList.add("green");
+      node.style.backgroundColor = "rgb(200, 255, 200)";
+      node.style.color = "rgb(0, 100, 0)";
+      if (this.lastCorrectAnswer != undefined){
+        document.getElementById("button_"+this.lastCorrectAnswer).style.backgroundColor = "rgb(234, 234, 234)";
+        document.getElementById("button_"+this.lastCorrectAnswer).style.color = "rgb(77, 77, 77)";
+      }
+      this.lastCorrectAnswer = a;
+    } else {
+      document.title++;
+      //document.getElementById("button_"+a).classList.add("red");
+      changeColor("button_"+a);
+      
+    }
+    if (this.answerArray.length == this.array.length){
+      // game over.
+    }
+  }
+
+
+  this.drawEverything = function (){
+    let canvas = document.getElementById(this.canvasId);
+    for (e in this.randomizedArray){
+      let node = document.createElement("div");
+      node.setAttribute('id','button_'+this.randomizedArray[e]);
+      node.setAttribute('class','button');
+      node.setAttribute('onclick',"game.doAnswer('"+this.randomizedArray[e]+"')");
+      node.textContent = this.randomizedArray[e];
+      node.style.cursor = "pointer";
+      node.style.backgroundColor = "rgb(255, 255 ,255)";
+      canvas.appendChild(node);
+    }
+  }
+
+  this.newGame = function (){
+    this.answerArray = []
+    document.title = 0;
+    this.lastCorrectAnswer = undefined;
+    let node = document.getElementById(this.canvasId);
+    node.innerHTML = "";
+    this.randomizedArray = this.randomizer();
+    this.drawEverything();
+  }
+
+  this.constructor();
+
+  // public methods / functions
+  this.output.randomizer = this.randomizer;
+  this.output.doAnswer = this.doAnswer;
+  this.output.newGame = this.newGame;
+  this.output.drawEverything = this.drawEverything;
+  this.output.changeColor = this.changeColor;
+
+  // public properties
+  this.output.answerArray = this.answerArray;
+  this.output.array = this.array;
+  this.output.canvasId = this.canvasId;
+  this.output.randomizedArray = this.randomizedArray;
+  this.output.lastCorrectAnswer = this.lastCorrectAnswer;
+  return this.output;
+}
+
+
+window.onload = function (){
+  game = BibleGame(array, "canvas");
+  //console.log(game.array);
+  console.log(game.randomizedArray);
+}
+</script>
+
+<style>
+body{font-family:Arial;}
+.button{line-height:50px; width:250px; float:left;text-align:center;border:1px solid lightgrey;margin:5px; font-size:14pt;
+box-shadow: 0px 0px 10px -5px #444444;
+
+}
+
+#button_Deuteronomium{}
+.red{color:red;background:rgb(255,200,200);}
+.green{color:green; background:lightgreen;}
+.grey{color:lightgrey; background:rgb(245,245,245);}
+</style>
+
+<div id="canvas" style=""></div>
+
+
+
+
+</html>
