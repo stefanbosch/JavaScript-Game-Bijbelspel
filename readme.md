@@ -33,10 +33,3 @@ Drie selecties beschikbaar:
 - Een footer met copyright en link naar GitHub.
 
 Kort samengevat: een *trivia-game* waarin je bijbelboeken tekenust ontdekt onder meer zoekfuncties, foutbeleid en een succesmelding.
-
-
-
-
-
-
-
