@@ -1,143 +1,192 @@
-<html !DOCTYPE>
-<script>
-//let array = ['Genesis','Exodus','Leviticus','Numeri','Deuteronomium','Jozua','Rechters','Ruth','1 Samuël','2 Samuël','1 Koningen','2 Koningen','1 Kronieken','2 Kronieken','Ezra','Nehemia','Ester','Job','Psalmen','Spreuken','Prediker','Hooglied','Jesaja','Jeremia','Klaagliederen','Ezechiël','Daniël','Hosea','Joël','Amos','Obadja','Jona','Micha','Nahum','Habakuk','Sefanja','Haggai','Zacharia','Maleachi','Matteus','Marcus','Lucas','Johannes','Handelingen','Romeinen','1 Korintiërs','2 Korintiërs','Galaten','Efeziers','Filippenzen','Kolossenzen','1 Tessalonicenzen','2 Tessalonicenzen','1 Timoteüs','2 Timoteüs','Titus','Filemon','Hebreeën','Jakobus','1 Petrus','2 Petrus','1 Johannes','2 Johannes','3 Johannes','Judas','Openbaring van Jezus'];
-let array = ['Genesis','Exodus','Leviticus','Numeri','Deuteronomium','Jozua','Rechters','Ruth','1 Samuël','2 Samuël','1 Koningen','2 Koningen','1 Kronieken','2 Kronieken','Ezra','Nehemia','Ester','Job','Psalmen','Spreuken','Prediker','Hooglied','Jesaja','Jeremia','Klaagliederen','Ezechiël','Daniël','Hosea','Joël','Amos','Obadja','Jona','Micha','Nahum','Habakuk','Sefanja','Haggai','Zacharia','Maleachi'];
-//let array = ['Genesis','Exodus','Leviticus','Numeri','Deuteronomium'];
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bijbel Boeken Spel</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #f8f9fa; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header-section {
+            padding: 2rem 0;
+            background-color: #ffffff;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .bible-btn {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 1px solid #dee2e6;
+            background-color: white;
+            user-select: none;
+        }
+        .bible-btn:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .correct-active {
+            background-color: #d4edda !important;
+            color: #155724 !important;
+            border-color: #c3e6cb !important;
+        }
+        .correct-done {
+            background-color: #f1f3f5 !important;
+            color: #adb5bd !important;
+            border-color: #dee2e6 !important;
+            cursor: default !important;
+            pointer-events: none;
+        }
+        #canvas {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            padding-bottom: 50px;
+        }
+    </style>
+</head>
+<body>
 
-function changeColor(id, isClicked){
-  isClicked = isClicked == undefined ? true : false ;
-  let node = document.getElementById(id);
-  let current = Number(node.style.backgroundColor.slice(4,17).split(",")[1]);
+    <div class="header-section text-center">
+        <div class="container">
+            <h1 class="display-4">Bijbel Boeken Spel</h1>
+            <p class="lead">Klik op de boeken in de juiste volgorde (Genesis t/m Maleachi).</p>
+            <div class="d-flex justify-content-center align-items-center gap-3">
+                <button class="btn btn-primary btn-lg" onclick="game.newGame()">Nieuw Spel</button>
+                <div class="fs-4">Fouten: <span id="error-count" class="badge bg-danger">0</span></div>
+            </div>
+        </div>
+    </div>
 
-  if (isClicked && !node.classList.contains("wrong")){
-    node.classList.add("wrong");
-    node.style.backgroundColor = "rgb(255, 100, 100)";
-    setTimeout(function (){changeColor(id,false)}, 30);
-  } 
-  else if (node.classList.contains("wrong")){
-    if (current >= 255){
-      node.classList.remove("wrong");
-    } else {
-      current = current + 8 >= 255 ? 255 : current + 8;
-      node.style.backgroundColor = "rgb(255,"+current+","+current+")";
-      setTimeout(function (){changeColor(id,false)}, 30);
+    <div class="container">
+        <div id="canvas"></div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    let array = ['Genesis','Exodus','Leviticus','Numeri','Deuteronomium','Jozua','Rechters','Ruth','1 Samuël','2 Samuël','1 Koningen','2 Koningen','1 Kronieken','2 Kronieken','Ezra','Nehemia','Ester','Job','Psalmen','Spreuken','Prediker','Hooglied','Jesaja','Jeremia','Klaagliederen','Ezechiël','Daniël','Hosea','Joël','Amos','Obadja','Jona','Micha','Nahum','Habakuk','Sefanja','Haggai','Zacharia','Maleachi'];
+    let errorCount = 0;
+
+    function updateErrorDisplay() {
+        document.getElementById('error-count').textContent = errorCount;
     }
-  }
-}
 
+    function changeColor(id, isClicked){
+      isClicked = isClicked === undefined ? true : false ;
+      let node = document.getElementById(id);
+      if (!node) return;
 
-function BibleGame (array,canvasId){
-  this.output = {};
-  this.constructor = function (){
-    this.array = array;
-    this.canvasId = canvasId;
-    this.newGame();
-  }
+      let currentRGB = node.style.backgroundColor.match(/\d+/g);
+      let currentG = currentRGB ? Number(currentRGB[1]) : 255;
 
-  this.randomizer = function (){
-    let tempArr1 = [].concat(this.array);
-    let tempArr2 = [];
-    //for (i=0;i<arrLength;i++){
-    while (tempArr1.length > 0){
-      let rand = Math.floor(Math.random() * tempArr1.length);
-      tempArr2.push(tempArr1[rand]);
-      tempArr1.splice(rand,1);
-    }
-    return tempArr2;
-  }
-
-  this.doAnswer = function (a){
-    if (a == this.array[this.answerArray.length]){
-      this.answerArray.push(a);
-      let node = document.getElementById("button_"+a);
-      node.removeAttribute("onclick");
-      node.style.cursor = "auto";
-      //node.classList.add("green");
-      node.style.backgroundColor = "rgb(200, 255, 200)";
-      node.style.color = "rgb(0, 100, 0)";
-      if (this.lastCorrectAnswer != undefined){
-        document.getElementById("button_"+this.lastCorrectAnswer).style.backgroundColor = "rgb(234, 234, 234)";
-        document.getElementById("button_"+this.lastCorrectAnswer).style.color = "rgb(77, 77, 77)";
+      if (isClicked && !node.classList.contains("wrong")){
+        node.classList.add("wrong");
+        node.style.backgroundColor = "rgb(255, 100, 100)";
+        setTimeout(function (){changeColor(id, false)}, 30);
+      } 
+      else if (node.classList.contains("wrong")){
+        if (currentG >= 255){
+          node.classList.remove("wrong");
+          node.style.backgroundColor = ""; // reset to original
+        } else {
+          let nextVal = currentG + 8 >= 255 ? 255 : currentG + 8;
+          node.style.backgroundColor = "rgb(255," + nextVal + "," + nextVal + ")";
+          setTimeout(function (){changeColor(id, false)}, 30);
+        }
       }
-      this.lastCorrectAnswer = a;
-    } else {
-      document.title++;
-      //document.getElementById("button_"+a).classList.add("red");
-      changeColor("button_"+a);
+    }
+
+    function BibleGame (bookArray, canvasId){
+      this.output = {};
+      this.constructor = function (){
+        this.array = bookArray;
+        this.canvasId = canvasId;
+        this.newGame();
+      }
+
+      this.randomizer = function (){
+        let tempArr1 = [].concat(this.array);
+        let tempArr2 = [];
+        while (tempArr1.length > 0){
+          let rand = Math.floor(Math.random() * tempArr1.length);
+          tempArr2.push(tempArr1[rand]);
+          tempArr1.splice(rand,1);
+        }
+        return tempArr2;
+      }
+
+      this.doAnswer = function (a){
+        if (a == this.array[this.answerArray.length]){
+          this.answerArray.push(a);
+          let node = document.getElementById("button_"+a);
+          node.removeAttribute("onclick");
+          
+          // Styling voor het laatst gekozen goede antwoord
+          node.classList.add("correct-active");
+          
+          if (this.lastCorrectAnswer != undefined){
+            let lastNode = document.getElementById("button_"+this.lastCorrectAnswer);
+            lastNode.classList.remove("correct-active");
+            lastNode.classList.add("correct-done");
+          }
+          this.lastCorrectAnswer = a;
+        } else {
+          errorCount++;
+          updateErrorDisplay();
+          changeColor("button_"+a);
+        }
+        
+        if (this.answerArray.length == this.array.length){
+            alert("Gefeliciteerd! Je hebt alle boeken in de juiste volgorde gevonden met " + errorCount + " fouten.");
+        }
+      }
+
+      this.drawEverything = function (){
+        let canvas = document.getElementById(this.canvasId);
+        canvas.innerHTML = "";
+        for (let book of this.randomizedArray){
+          let node = document.createElement("div");
+          node.setAttribute('id','button_'+book);
+          node.setAttribute('class','bible-btn shadow-sm rounded');
+          node.setAttribute('onclick',"game.doAnswer('"+book+"')");
+          node.textContent = book;
+          canvas.appendChild(node);
+        }
+      }
+
+      this.newGame = function (){
+        this.answerArray = [];
+        errorCount = 0;
+        updateErrorDisplay();
+        this.lastCorrectAnswer = undefined;
+        this.randomizedArray = this.randomizer();
+        this.drawEverything();
+      }
+
+      this.constructor();
+
+      // public methods
+      this.output.doAnswer = this.doAnswer.bind(this);
+      this.output.newGame = this.newGame.bind(this);
       
+      return this.output;
     }
-    if (this.answerArray.length == this.array.length){
-      // game over.
+
+    let game;
+    window.onload = function (){
+      game = BibleGame(array, "canvas");
     }
-  }
-
-
-  this.drawEverything = function (){
-    let canvas = document.getElementById(this.canvasId);
-    for (e in this.randomizedArray){
-      let node = document.createElement("div");
-      node.setAttribute('id','button_'+this.randomizedArray[e]);
-      node.setAttribute('class','button');
-      node.setAttribute('onclick',"game.doAnswer('"+this.randomizedArray[e]+"')");
-      node.textContent = this.randomizedArray[e];
-      node.style.cursor = "pointer";
-      node.style.backgroundColor = "rgb(255, 255 ,255)";
-      canvas.appendChild(node);
-    }
-  }
-
-  this.newGame = function (){
-    this.answerArray = []
-    document.title = 0;
-    this.lastCorrectAnswer = undefined;
-    let node = document.getElementById(this.canvasId);
-    node.innerHTML = "";
-    this.randomizedArray = this.randomizer();
-    this.drawEverything();
-  }
-
-  this.constructor();
-
-  // public methods / functions
-  this.output.randomizer = this.randomizer;
-  this.output.doAnswer = this.doAnswer;
-  this.output.newGame = this.newGame;
-  this.output.drawEverything = this.drawEverything;
-  this.output.changeColor = this.changeColor;
-
-  // public properties
-  this.output.answerArray = this.answerArray;
-  this.output.array = this.array;
-  this.output.canvasId = this.canvasId;
-  this.output.randomizedArray = this.randomizedArray;
-  this.output.lastCorrectAnswer = this.lastCorrectAnswer;
-  return this.output;
-}
-
-
-window.onload = function (){
-  game = BibleGame(array, "canvas");
-  //console.log(game.array);
-  console.log(game.randomizedArray);
-}
-</script>
-
-<style>
-body{font-family:Arial;}
-.button{line-height:50px; width:250px; float:left;text-align:center;border:1px solid lightgrey;margin:5px; font-size:14pt;
-box-shadow: 0px 0px 10px -5px #444444;
-
-}
-
-#button_Deuteronomium{}
-.red{color:red;background:rgb(255,200,200);}
-.green{color:green; background:lightgreen;}
-.grey{color:lightgrey; background:rgb(245,245,245);}
-</style>
-
-<div id="canvas" style=""></div>
-
-
-
-
+    </script>
+</body>
 </html>
+
