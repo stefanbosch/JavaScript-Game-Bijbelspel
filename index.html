@@ -8,13 +8,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Add the script tag to import data.js -->
+    <script src="data.js"></script>
     <style>
         :root {
             --primary-color: #4a90e2;
             --success-color: #28a745;
             --error-color: #dc3545;
+            --gold-color: #d4af37;
         }
-                body { 
+        body { 
             background-color: #f0f2f5; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
@@ -122,7 +125,7 @@
         }
         .is-correct .info-btn { color: #28a745; }
 
-                #canvas {
+        #canvas {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 15px;
@@ -175,6 +178,35 @@
             color: var(--primary-color);
         }
 
+        /* Golden Tip Styles */
+        .btn-golden-tip {
+            color: #856404;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 20px;
+            padding: 0.35rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-golden-tip:hover {
+            background-color: #ffe8a1;
+            color: #6c5103;
+            border-color: #ffd666;
+        }
+        .golden-tip-box {
+            max-width: 450px;
+            margin: 0.5rem auto 1rem auto;
+            background-color: #fff8e1;
+            border-left: 4px solid var(--gold-color);
+            border-radius: 6px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            font-size: 0.9rem;
+            color: #5c4300;
+            text-align: left;
+        }
+
         .mode-selection {
             max-width: 600px;
             margin: 50px auto;
@@ -188,41 +220,54 @@
 <body>
     <div class="main-content">
         <div id="game-ui" style="display:none;">
-                <div class="header-section text-center">
+            <div class="header-section text-center">
+                <div class="container">
+                    <h1 class="h2 mb-3">Bijbel Boeken Spel</h1>
+                    
+                    <!-- Gouden Tip Knop en Paneel -->
+                    <div class="mb-2">
+                        <button type="button" class="btn btn-golden-tip shadow-sm" onclick="toggleGoldenTip()">
+                            <i class="bi bi-info-circle me-1"></i> Geef mij een hint
+                        </button>
+                    </div>
+                    <div id="golden-tip-box" class="golden-tip-box d-none">
+                        <strong><i class="bi bi-lightbulb text-warning me-1"></i> Hint voor volgende boek:</strong>
+                        <div id="golden-tip-text" class="mt-1"></div>
+                    </div>
+
+                    <!-- Zoekbalk -->
+                    <div class="search-container">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" id="book-search" class="form-control search-input" placeholder="Zoek een bijbelboek..." autocomplete="off">
+                        <div id="search-suggestions" class="search-suggestions"></div>
+                    </div>
+
+                    <div class="d-flex justify-content-center align-items-center gap-4">
+                        <button class="btn btn-outline-primary" onclick="showSelection()">
+                            <i class="bi bi-arrow-left"></i> Menu
+                        </button>
+                        <div class="fs-5">Fouten: <span id="error-count" class="badge bg-danger">0</span></div>
+                        <div class="fs-5 text-muted" id="game-mode-label"></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="container">
-                <h1 class="h2 mb-3">Bijbel Boeken Spel</h1>
-                
-                <div class="search-container">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" id="book-search" class="form-control search-input" placeholder="Zoek een bijbelboek..." autocomplete="off">
-                    <div id="search-suggestions" class="search-suggestions"></div>
-                </div>
-
-                <div class="d-flex justify-content-center align-items-center gap-4">
-                    <button class="btn btn-outline-primary" onclick="showSelection()">
-                        <i class="bi bi-arrow-left"></i> Menu
-                    </button>
-                    <div class="fs-5">Fouten: <span id="error-count" class="badge bg-danger">0</span></div>
-                    <div class="fs-5 text-muted" id="game-mode-label"></div>
-                </div>
+                <div id="canvas"></div>
             </div>
         </div>
 
-        <div class="container">
-            <div id="canvas"></div>
-        </div>
-    </div>
-
-    <div id="selection-screen" class="container">
-        <div class="mode-selection text-center">
-            <i class="bi bi-book-half display-1 text-primary mb-4"></i>
-            <h2 class="mb-4">Kies een spelmodus</h2>
-            <div class="d-grid gap-3">
-                <button class="btn btn-primary btn-lg" onclick="startGame('OT')">Oude Testament (39 boeken)</button>
-                <button class="btn btn-success btn-lg" onclick="startGame('NT')">Nieuwe Testament (27 boeken)</button>
-                <button class="btn btn-dark btn-lg" onclick="startGame('ALL')">Hele Bijbel (66 boeken)</button>
-            </div>
+        <div id="selection-screen" class="container">
+            <div class="mode-selection text-center">
+                <i class="bi bi-book-half display-1 text-primary mb-4"></i>
+                <h2 class="mb-4">Kies een spelmodus</h2>
+                <div class="d-grid gap-3">
+                    <button class="btn btn-primary btn-lg" onclick="startGame('OT')">Oude Testament (39 boeken)</button>
+                    <button class="btn btn-success btn-lg" onclick="startGame('NT')">Nieuwe Testament (27 boeken)</button>
+                    <button class="btn btn-dark btn-lg" onclick="startGame('ALL')">Hele Bijbel (66 boeken)</button>
                 </div>
+            </div>
+        </div>
     </div>
 
     <footer>
@@ -245,81 +290,43 @@
 
     const otBooks = ['Genesis','Exodus','Leviticus','Numeri','Deuteronomium','Jozua','Rechters','Ruth','1 Samuel','2 Samuel','1 Koningen','2 Koningen','1 Kronieken','2 Kronieken','Ezra','Nehemia','Ester','Job','Psalmen','Spreuken','Prediker','Hooglied','Jesaja','Jeremia','Klaagliederen','Ezechiël','Daniël','Hosea','Joël','Amos','Obadja','Jona','Micha','Nahum','Habakuk','Sefanja','Haggai','Zacharia','Maleachi'];
     const ntBooks = ['Matteüs','Marcus','Lucas','Johannes','Handelingen','Romeinen','1 Korintiërs','2 Korintiërs','Galaten','Efeziers','Filippenzen','Kolossenzen','1 Tessalonicenzen','2 Tessalonicenzen','1 Timoteüs','2 Timoteüs','Titus','Filemon','Hebreeën','Jakobus','1 Petrus','2 Petrus','1 Johannes','2 Johannes','3 Johannes','Judas','Openbaring van Jezus'];
-    
-    const bookData = {
-    // --- Oude Testament (otBooks) ---
-    'Genesis': { summary: 'Het begin van de schepping, de zondeval en de aartsvaders.', people: 'Adam, Eva, Noach, Abraham' },
-    'Exodus': { summary: 'De uittocht uit Egypte en de wetgeving bij de Sinai.', people: 'Mozes, Aäron, Farao' },
-    'Leviticus': { summary: 'Wetten rondom heiligheid, offers, priesterschap en reinheid.', people: 'Mozes, Aäron, Nadab, Abihu' },
-    'Numeri': { summary: 'Volkstellingen en de veertigjarige woestijnreis naar het beloofde land.', people: 'Mozes, Jozua, Kaleb, Bileam' },
-    'Deuteronomium': { summary: 'Herhaling en toelichting van de wet vlak voor de intocht in Kanaän.', people: 'Mozes, Jozua' },
-    'Jozua': { summary: 'De verovering en verdeling van het beloofde land Kanaän.', people: 'Jozua, Rachab, Achan' },
-    'Rechters': { summary: 'Een cyclus van afval, onderdrukking en bevrijding door leiders (rechters).', people: 'Debora, Gideon, Simson' },
-    'Ruth': { summary: 'Een verhaal over trouw, liefde en verlossing tijdens de richterentijd.', people: 'Ruth, Naomi, Boaz' },
-    '1 Samuel': { summary: 'De overgang van richters naar de monarchie en de opkomst van David.', people: 'Samuel, Saul, David, Jonatan' },
-    '2 Samuel': { summary: 'Het koningschap van David, zijn triomfen en zijn beproevingen.', people: 'David, Batseba, Natan, Absalom' },
-    '1 Koningen': { summary: 'Het koningschap van Salomo, de bouw van de tempel en de scheuring van het rijk.', people: 'Salomo, Jerobeam, Rehabeam, Elia' },
-    '2 Koningen': { summary: 'De geschiedenis van de verdeelde koninkrijken tot aan de ballingschap.', people: 'Elisa, Hizkia, Josia, Nebukadnezar' },
-    '1 Kronieken': { summary: 'Geslachtsregisters en een priesterlijk perspectief op de regering van David.', people: 'Adam, David, Salomo' },
-    '2 Kronieken': { summary: 'De heerschappij van Salomo en de geschiedenis van het koninkrijk Juda.', people: 'Salomo, Josafat, Hizkia, Josia' },
-    'Ezra': { summary: 'De terugkeer van de Joodse ballingen en de wederopbouw van de tempel.', people: 'Ezra, Zerubbabel, Kores' },
-    'Nehemia': { summary: 'De herbouw van de muren van Jeruzalem en geestelijke hervormingen.', people: 'Nehemia, Ezra, Sanballat' },
-    'Ester': { summary: 'De redding van het Joodse volk in het Perzische Rijk van vernietiging.', people: 'Ester, Mordechai, Haman, Ahasveros' },
-    'Job': { summary: 'Een diepzinnige dialoog over het lijden van de rechtvaardige en Gods soevereiniteit.', people: 'Job, Elifaz, Bildad, Zofar, Elihu' },
-    'Psalmen': { summary: 'Liederen, gebeden en gedichten over lofprijs, boete, verdriet en vertrouwen.', people: 'David, Asaf, de zonen van Korach' },
-    'Spreuken': { summary: 'Praktische levenswijsheden en ethische lessen gebaseerd op het ontzag voor God.', people: 'Salomo, Agur, Lemuel' },
-    'Prediker': { summary: 'Filosofische reflectie over de vergankelijkheid van het leven en de zin ervan.', people: 'De Prediker (Salomo)' },
-    'Hooglied': { summary: 'Een poëtische viering van liefde, huwelijk en verlangen.', people: 'De bruidegom (Salomo), de Sulammitische' },
-    'Jesaja': { summary: 'Profetieën over oordeel, troost en de komst van de Lijdende Dienstknecht (de Messias).', people: 'Jesaja, koning Achaz, koning Hizkia' },
-    'Jeremia': { summary: 'Oproepen tot bekering vóór de val van Jeruzalem en de belofte van een nieuw verbond.', people: 'Jeremia, Baruch, koning Sedekia' },
-    'Klaagliederen': { summary: 'Rouwdichten over de verwoesting van Jeruzalem en de ballingschap.', people: 'Jeremia' },
-    'Ezechiël': { summary: 'Visioenen van Gods glorie, het oordeel en het toekomstige herstel van Israël.', people: 'Ezechiël' },
-    'Daniël': { summary: 'Verhalen over trouw in ballingschap en apocalyptische visioenen over wereldrijken.', people: 'Daniël, Sadrach, Mesach, Abednego, Nebukadnezar' },
-    'Hosea': { summary: 'Gods onvoorwaardelijke trouw aan een ontrouw volk, gesymboliseerd door een huwelijk.', people: 'Hosea, Gomer' },
-    'Joël': { summary: 'De sprinkhanenplaag als voorafspiegeling van de Dag van de Heer en de uitstorting van de Geest.', people: 'Joël' },
-    'Amos': { summary: 'Aanklacht tegen sociale onrechtvaardigheid en schijnvroomheid in het noordelijke rijk.', people: 'Amos, Amazja' },
-    'Obadja': { summary: 'Een profetie over het oordeel over Edom wegens vijandigheid tegenover Israël.', people: 'Obadja' },
-    'Jona': { summary: 'Een profeet die vlucht voor Gods opdracht en Gods genade voor Nineve.', people: 'Jona' },
-    'Micha': { summary: 'Oordeel over onrecht en de belofte van een heerser die uit Betlehem zal komen.', people: 'Micha' },
-    'Nahum': { summary: 'Aankondiging van de val en het definitieve oordeel over Nineve.', people: 'Nahum' },
-    'Habakuk': { summary: 'Vragen en geworstel over Gods rechtvaardigheid, eindigend in vertrouwen.', people: 'Habakuk' },
-    'Sefanja': { summary: 'Aankondiging van de Dag van de Heer en de belofte van herstel voor een restvolk.', people: 'Sefanja, koning Josia' },
-    'Haggai': { summary: 'Aansporing aan de teruggekeerde ballingen om de tempel af te bouwen.', people: 'Haggai, Zerubbabel, Jozua de hogepriester' },
-    'Zacharia': { summary: 'Profetische visioenen over de wederopbouw, de Messias en Gods uiteindelijke koninkrijk.', people: 'Zacharia, Zerubbabel, Jozua' },
-    'Maleachi': { summary: 'Vermaningen over lauwheid in het geloof en de belofte van de voorloper van de Messias.', people: 'Maleachi' },
 
-    // --- Nieuwe Testament (ntBooks) ---
-    'Matteüs': { summary: 'Het leven van Jezus, geschreven voor een Joods publiek.', people: 'Jezus, de discipelen, Maria' },
-    'Marcus': { summary: 'Een beknopt en dynamisch verslag van het handelen en lijden van Jezus als Dienaar.', people: 'Jezus, Petrus, Johannes de Doper' },
-    'Lucas': { summary: 'Een gedetailleerd historisch evangelie over Jezus als de Verlosser van alle mensen.', people: 'Jezus, Lucas, Maria, Zacharias, Elisabet' },
-    'Johannes': { summary: 'Theologisch evangelie dat focust op Jezus als de eeuwige Zoon van God.', people: 'Jezus, Johannes, Nicodemus, Lazarus' },
-    'Handelingen': { summary: 'De uitstorting van de Heilige Geest en de verspreiding van het evangelie en de vroege kerk.', people: 'Petrus, Paulus, Stefanus, Barnabas' },
-    'Romeinen': { summary: 'Grondige uiteenzetting van redding door genade en geloof in Christus.', people: 'Paulus' },
-    '1 Korintiërs': { summary: 'Praktische richtlijnen voor verdeeldheid, moraal, gaven van de Geest en de opstanding.', people: 'Paulus, Apollos' },
-    '2 Korintiërs': { summary: 'Verdediging van Paulus’ apostelschap en troost in beproevingen.', people: 'Paulus, Titus' },
-    'Galaten': { summary: 'Verdediging van de christelijke vrijheid en rechtvaardiging door geloof in plaats van wet.', people: 'Paulus, Petrus' },
-    'Efeziers': { summary: 'De rijkdom van Gods genade, de eenheid van de kerk en de geestelijke wapenrusting.', people: 'Paulus, Tychikus' },
-    'Filippenzen': { summary: 'Een brief vol vreugde, bemoediging en eensgezindheid ondanks gevangenschap.', people: 'Paulus, Timoteüs, Epafroditus' },
-    'Kolossenzen': { summary: 'De absolute suprematie en toereikendheid van Christus boven menselijke tradities.', people: 'Paulus, Epafras' },
-    '1 Tessalonicenzen': { summary: 'Bemoediging van een jonge gemeente en onderwijs over de wederkomst van Jezus.', people: 'Paulus, Silas, Timoteüs' },
-    '2 Tessalonicenzen': { summary: 'Correctie van misvattingen rondom de Dag van de Heer en de opstandigheid.', people: 'Paulus, Silas' },
-    '1 Timoteüs': { summary: 'Instructies voor leiderschap, kerkorde en gezonde leer in de plaatselijke gemeente.', people: 'Paulus, Timoteüs' },
-    '2 Timoteüs': { summary: 'Paulus’ laatste afscheidsbrief met aansporingen om vol te houden in het geloof.', people: 'Paulus, Timoteüs, Lukas' },
-    'Titus': { summary: 'Instructies over het aanstellen van oudsten en het leiden van een vroom leven op Kreta.', people: 'Paulus, Titus' },
-    'Filemon': { summary: 'Een persoonlijk pleidooi om de weggelopen slaaf Onesimus als broeder te ontvangen.', people: 'Paulus, Filemon, Onesimus' },
-    'Hebreeën': { summary: 'Aantoonbaar bewijs dat Jezus en het nieuwe verbond superieur zijn aan de wet en offers.', people: 'De auteur, Melchisedek, Jozua, Mozes' },
-    'Jakobus': { summary: 'Praktische instructies dat waar geloof zichtbaar moet worden door goede daden.', people: 'Jakobus' },
-    '1 Petrus': { summary: 'Bemoediging en hoop voor christenen die lijden onder vervolging.', people: 'Petrus, Silvanus' },
-    '2 Petrus': { summary: 'Waarschuwing tegen dwaalleraars en aansporing tot standvastigheid in de eindtijd.', people: 'Petrus' },
-    '1 Johannes': { summary: 'Oproep tot wandel in het licht, liefde voor elkaar en zekerheid van het eeuwige leven.', people: 'Johannes' },
-    '2 Johannes': { summary: 'Korte brief over het bewaren van waarheid en liefde tegen misleiders.', people: 'Johannes (de oudste), de uitverkoren vrouw' },
-    '3 Johannes': { summary: 'Lof voor gastvrijheid en waarschuwing tegen machtswellust in de gemeente.', people: 'Johannes, Gajus, Diotrefes, Demetrius' },
-    'Judas': { summary: 'Aansporing om krachtig te strijden voor het geloof tegen binnengedrongen dwaalleraars.', people: 'Judas' },
-    'Openbaring van Jezus': { summary: 'Visioenen over de eindtijd en de nieuwe wereld.', people: 'Johannes, Het Lam' }
-    };
-
-        let currentGame;
+    let currentGame;
     let errorCount = 0;
+
+    // Gouden Tip Logica
+    function toggleGoldenTip() {
+        if (!currentGame) return;
+
+        const tipBox = document.getElementById('golden-tip-box');
+        const tipText = document.getElementById('golden-tip-text');
+
+        // Als de tip al open staat, klik = verbergen
+        if (!tipBox.classList.contains('d-none')) {
+            tipBox.classList.add('d-none');
+            return;
+        }
+
+        const nextIndex = currentGame.answerArray.length;
+        if (nextIndex < currentGame.fullArray.length) {
+            const nextBookName = currentGame.fullArray[nextIndex];
+            const info = (typeof bookData !== 'undefined' && bookData[nextBookName]) 
+                ? bookData[nextBookName].summary 
+                : 'Geen omschrijving gevonden voor dit boek.';
+            tipText.textContent = info;
+            tipBox.classList.remove('d-none');
+        } else {
+            tipText.textContent = "Je hebt alle boeken al gevonden!";
+            tipBox.classList.remove('d-none');
+        }
+    }
+
+    function hideGoldenTip() {
+        const tipBox = document.getElementById('golden-tip-box');
+        if (tipBox) {
+            tipBox.classList.add('d-none');
+        }
+    }
 
     // Search Logic
     const searchInput = document.getElementById('book-search');
@@ -392,11 +399,13 @@
     });
 
     function showSelection() {
+        hideGoldenTip();
         document.getElementById('selection-screen').style.display = 'block';
         document.getElementById('game-ui').style.display = 'none';
     }
 
     function startGame(mode) {
+        hideGoldenTip();
         let books = [];
         let label = "";
         if (mode === 'OT') { books = otBooks; label = "Oude Testament"; }
@@ -436,6 +445,7 @@
 
             if (bookName === expectedBook) {
                 this.answerArray.push(bookName);
+                hideGoldenTip(); // Verberg de gouden tip weer als het juiste boek is geklikt
                 card.classList.add('is-correct');
                 const posBadge = card.querySelector('.pos-badge');
                 posBadge.textContent = this.answerArray.length;
@@ -497,5 +507,3 @@
     </script>
 </body>
 </html>
-
-
