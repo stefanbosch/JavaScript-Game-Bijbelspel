@@ -135,7 +135,7 @@
         /* Search Styles */
         .search-container {
             max-width: 400px;
-            margin: 0 auto 1.5rem auto;
+            margin: 1.5rem auto 1.5rem auto;
             position: relative;
         }
         .search-input {
@@ -261,7 +261,8 @@
         <div id="game-ui" style="display:none;">
             <div class="header-section text-center">
                 <div class="container">
-                    <h1 class="h2 mb-3">Bijbel Boeken Spel</h1>
+                    <h1 class="h2 mb-1">Bijbel Boeken Spel</h1>
+                    <div class="fs-5 text-muted mb-3" id="game-mode-label"></div>
                     
                     <!-- Gouden Tip Knop en Paneel -->
                     <div class="mb-2">
@@ -285,8 +286,8 @@
                         <button class="btn btn-outline-primary" onclick="showSelection()">
                             <i class="bi bi-arrow-left"></i> Menu
                         </button>
-                        <div class="fs-5 position-relative">Fouten: <span id="error-count" class="badge bg-danger">0</span></div>
-                        <div class="fs-5 text-muted" id="game-mode-label"></div>
+                        <div class="fs-5 position-relative">Score: <span id="error-count" class="badge bg-danger">0</span> <span id="correct-count" class="badge bg-success">0</span></div>
+                        
                     </div>
                 </div>
             </div>
