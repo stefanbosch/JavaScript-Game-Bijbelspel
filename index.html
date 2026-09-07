@@ -223,8 +223,36 @@
             40%, 80% { transform: translateX(5px); }
         }
 
-        .shake {
+                .shake {
             animation: shake 0.4s ease-in-out;
+        }
+
+        /* Thumbs up animatie */
+        .thumbs-up-animation {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 20px;
+            color: #28a745;
+            font-size: 2rem;
+            pointer-events: none;
+            z-index: 1000;
+            animation: thumbsUpFly 1s ease-out forwards;
+        }
+
+        @keyframes thumbsUpFly {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, 10px);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -40px);
+            }
         }
     </style>
 </head>
@@ -257,7 +285,7 @@
                         <button class="btn btn-outline-primary" onclick="showSelection()">
                             <i class="bi bi-arrow-left"></i> Menu
                         </button>
-                        <div class="fs-5">Fouten: <span id="error-count" class="badge bg-danger">0</span></div>
+                        <div class="fs-5 position-relative">Fouten: <span id="error-count" class="badge bg-danger">0</span></div>
                         <div class="fs-5 text-muted" id="game-mode-label"></div>
                     </div>
                 </div>
@@ -457,9 +485,11 @@
             if (bookName === expectedBook) {
                 this.answerArray.push(bookName);
                 hideGoldenTip(); // Verberg de gouden tip weer als het juiste boek is geklikt
-                card.classList.add('is-correct');
+                                card.classList.add('is-correct');
                 const posBadge = card.querySelector('.pos-badge');
                 posBadge.textContent = this.answerArray.length;
+                
+                this.showThumbsUp();
 
                 if (this.answerArray.length === this.fullArray.length) {
                     setTimeout(() => alert("Gefeliciteerd! Je hebt alle boeken gevonden met " + errorCount + " fouten."), 500);
@@ -478,7 +508,7 @@
             }
         };
 
-        this.flashError = function(card) {
+                this.flashError = function(card) {
             const inner = card.querySelector('.card-front');
             inner.style.backgroundColor = "#f8d7da";
             setTimeout(() => {
@@ -486,6 +516,20 @@
                     inner.style.backgroundColor = "white";
                 }
             }, 300);
+        };
+
+        this.showThumbsUp = function() {
+            const errorBadge = document.getElementById('error-count');
+            const container = errorBadge.parentElement;
+            
+            const thumbsUp = document.createElement('i');
+            thumbsUp.className = 'bi bi-hand-thumbs-up-fill thumbs-up-animation';
+            container.appendChild(thumbsUp);
+            
+            // Verwijder het element na de animatie om de DOM schoon te houden
+            setTimeout(() => {
+                thumbsUp.remove();
+            }, 1000);
         };
 
         this.draw = function() {
