@@ -504,8 +504,10 @@
                 errorBadge.classList.remove('shake');
                 void errorBadge.offsetWidth; // Forceer herberekening van de browser layout (reflow) zodat de animatie altijd opnieuw start
                 errorBadge.classList.add('shake');
-
+                
                 this.flashError(card);
+
+                this.showThumbsDown();
             }
         };
 
@@ -532,6 +534,22 @@
                 thumbsUp.remove();
             }, 1000);
         };
+
+        this.showThumbsDown = function() {
+            const searchInput = document.getElementById('book-search');
+            const container = searchInput.parentElement;
+            
+            const thumbsDown = document.createElement('i');
+            thumbsDown.className = 'bi bi-hand-thumbs-down-fill thumbs-up-animation';
+            thumbsDown.style.color = 'red'; // Change the color to red
+            container.appendChild(thumbsDown);
+            
+            // Remove the element after the animation to keep the DOM clean
+            setTimeout(() => {
+                thumbsDown.remove();
+            }, 1000);
+        };
+
 
         this.draw = function() {
             const canvas = document.getElementById(this.canvasId);
