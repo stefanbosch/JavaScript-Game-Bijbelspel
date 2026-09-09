@@ -131,7 +131,7 @@ footer .soli-deo {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 15px;
-    padding-bottom: 50px;
+    padding-bottom: 0;
 }
 
 /* Search Styles */
