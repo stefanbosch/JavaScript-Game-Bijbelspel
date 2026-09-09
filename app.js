@@ -175,6 +175,17 @@ function BibleGame(bookArray, canvasId) {
             lastCorrectBookElement.textContent = `${bookName}`;
             lastCorrectBookElement.innerHTML += '<i class="bi bi-check-circle-fill ms-1"></i>';
 
+            const canvas = document.getElementById(this.canvasId);
+            card.classList.add('fade-out'); // Add fade-out class for the current card
+            setTimeout(() => {
+                canvas.appendChild(card); // Append the card to the canvas at its new position
+                card.classList.remove('fade-out', 'is-flipped'); // Remove classes after appending and flipping
+                card.classList.add('fade-in'); // Add fade-in class for the updated card
+                setTimeout(() => {
+                    card.classList.remove('fade-in'); // Remove the fade-in class once the animation is complete
+                }, 1500);
+            }, 1500); // Delay the appending of the card by 500ms to allow the fade-out animation to complete
+
             if (this.answerArray.length === this.fullArray.length) {
                 setTimeout(() => alert("Gefeliciteerd! Je hebt alle boeken gevonden met " + errorCount + " fouten."), 500);
             }

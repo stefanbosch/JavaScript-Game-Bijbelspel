@@ -68,6 +68,21 @@ footer .soli-deo {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     border: 1px solid #dee2e6;
 }
+
+
+.fade-in {animation: fadeIn 1.5s ease-in;}
+.fade-out {animation: fadeOut 1.5s ease-in;}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
 .card-front {
     background-color: white;
     color: #333;
@@ -247,3 +262,7 @@ footer .soli-deo {
         transform: translate(-50%, -40px);
     }
 }
+
+
+
+
