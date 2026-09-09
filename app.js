@@ -7,6 +7,30 @@ let currentGame;
 let errorCount = 0;
 let correctCount = 0; // Nieuw variabele voor het aantal juiste antwoorden
 
+// Timer logica
+let startTime;
+let timerInterval;
+
+function startTimer() {
+    startTime = new Date().getTime();
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+    const now = new Date().getTime();
+    const timeDifference = Math.floor((now - startTime) / 1000);
+
+    const minutes = Math.floor(timeDifference / 60);
+    const seconds = timeDifference % 60;
+
+    document.getElementById('timer').textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    document.getElementById('timer').textContent = '00:00';
+}
+
 // Gouden Tip Logica
 function toggleGoldenTip() {
     if (!currentGame) return;
@@ -115,6 +139,7 @@ function showSelection() {
     hideGoldenTip();
     document.getElementById('selection-screen').style.display = 'block';
     document.getElementById('game-ui').style.display = 'none';
+    currentGame.stopTimer();
 }
 
 function startGame(mode) {
@@ -130,6 +155,8 @@ function startGame(mode) {
     document.getElementById('game-mode-label').textContent = label;
     
     currentGame = new BibleGame(books, "canvas");
+
+    currentGame.startTimer();
 }
 
 function BibleGame(bookArray, canvasId) {
@@ -187,7 +214,8 @@ function BibleGame(bookArray, canvasId) {
             }, 1500); // Delay the appending of the card by 500ms to allow the fade-out animation to complete
 
             if (this.answerArray.length === this.fullArray.length) {
-                setTimeout(() => alert("Gefeliciteerd! Je hebt alle boeken gevonden met " + errorCount + " fouten."), 500);
+                setTimeout(() => alert("Gefeliciteerd! Je hebt alle boeken gevonden met " + errorCount + " fouten. " + document.getElementById('timer').textContent ), 500);
+                this.stopTimer();
             }
         } else {
             errorCount++;
@@ -242,6 +270,14 @@ function BibleGame(bookArray, canvasId) {
         setTimeout(() => {
             thumbsDown.remove();
         }, 1000);
+    };
+
+    this.startTimer = function() {
+    startTimer();
+    };
+
+    this.stopTimer = function() {
+        stopTimer();
     };
 
     this.draw = function() {
