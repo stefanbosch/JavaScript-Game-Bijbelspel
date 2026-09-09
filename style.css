@@ -227,6 +227,12 @@ footer .soli-deo {
     animation: thumbsUpFly 1s ease-out forwards;
 }
 
+#last-correct-book {
+    font-size: 0.8rem;
+    color: #28a745;
+    margin-left: 1rem;
+}
+
 @keyframes thumbsUpFly {
     0% {
         opacity: 0;

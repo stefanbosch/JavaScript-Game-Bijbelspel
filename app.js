@@ -140,6 +140,7 @@ function BibleGame(bookArray, canvasId) {
     correctCount = 0;
     document.getElementById('error-count').textContent = "0";
     document.getElementById('correct-count').textContent = "0";
+    document.getElementById('last-correct-book').textContent = "";
 
     this.randomize = function(arr) {
         return [...arr].sort(() => Math.random() - 0.5);
@@ -161,7 +162,7 @@ function BibleGame(bookArray, canvasId) {
         if (bookName === expectedBook) {
             this.answerArray.push(bookName);
             hideGoldenTip(); // Verberg de gouden tip weer als het juiste boek is geklikt
-                            card.classList.add('is-correct');
+                                card.classList.add('is-correct');
             const posBadge = card.querySelector('.pos-badge');
             posBadge.textContent = this.answerArray.length;
             
@@ -169,7 +170,10 @@ function BibleGame(bookArray, canvasId) {
             correctCount++; // Juist antwoord verhogen
 
             document.getElementById('correct-count').textContent = correctCount; // Update de weergave van juiste antwoorden
-            
+
+            const lastCorrectBookElement = document.getElementById('last-correct-book');
+            lastCorrectBookElement.textContent = `${bookName}`;
+            lastCorrectBookElement.innerHTML += '<i class="bi bi-check-circle-fill ms-1"></i>';
 
             if (this.answerArray.length === this.fullArray.length) {
                 setTimeout(() => alert("Gefeliciteerd! Je hebt alle boeken gevonden met " + errorCount + " fouten."), 500);
@@ -183,7 +187,7 @@ function BibleGame(bookArray, canvasId) {
             errorBadge.classList.remove('shake');
             void errorBadge.offsetWidth; // Forceer herberekening van de browser layout (reflow) zodat de animatie altijd opnieuw start
             errorBadge.classList.add('shake');
-            
+                
             this.flashError(card);
 
             this.showThumbsDown();
