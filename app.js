@@ -5,6 +5,7 @@ const ntBooks = ['Matteüs','Marcus','Lucas','Johannes','Handelingen','Romeinen'
 
 let currentGame;
 let errorCount = 0;
+let correctCount = 0; // Nieuw variabele voor het aantal juiste antwoorden
 
 // Gouden Tip Logica
 function toggleGoldenTip() {
@@ -60,7 +61,7 @@ searchInput.addEventListener('input', function() {
     if (filtered.length > 0) {
         suggestionsBox.innerHTML = filtered.map((book, index) => 
             `<div class="suggestion-item" onclick="selectSuggestion('${book}')">${book}</div>`
-        ).join('');
+        ).join(' ');
         suggestionsBox.style.display = 'block';
     } else {
         suggestionsBox.style.display = 'none';
@@ -136,7 +137,9 @@ function BibleGame(bookArray, canvasId) {
     this.answerArray = [];
     this.canvasId = canvasId;
     errorCount = 0;
+    correctCount = 0;
     document.getElementById('error-count').textContent = "0";
+    document.getElementById('correct-count').textContent = "0";
 
     this.randomize = function(arr) {
         return [...arr].sort(() => Math.random() - 0.5);
@@ -163,6 +166,10 @@ function BibleGame(bookArray, canvasId) {
             posBadge.textContent = this.answerArray.length;
             
             this.showThumbsUp();
+            correctCount++; // Juist antwoord verhogen
+
+            document.getElementById('correct-count').textContent = correctCount; // Update de weergave van juiste antwoorden
+            
 
             if (this.answerArray.length === this.fullArray.length) {
                 setTimeout(() => alert("Gefeliciteerd! Je hebt alle boeken gevonden met " + errorCount + " fouten."), 500);
@@ -221,7 +228,6 @@ function BibleGame(bookArray, canvasId) {
             thumbsDown.remove();
         }, 1000);
     };
-
 
     this.draw = function() {
         const canvas = document.getElementById(this.canvasId);
